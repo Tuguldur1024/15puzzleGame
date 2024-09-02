@@ -21,6 +21,41 @@ const Puzzle = () => {
 
   const [data, setData] = useState(first);
 
+  useEffect(() => {
+    let interval = setInterval(() => {
+      setTimer((n) => n + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  });
+
+  const handleClick = (number) => {
+    let current = [...first];
+    let hoosonMur = 0;
+    let hoosonBagana = 0;
+    let myMur = 0;
+    let myBagana = 0;
+    for (let i = 0; i < first.length; i++) {
+      for (let j = 0; j < first.length; j++) {
+        if (current[i][j] == "") {
+          hoosonMur = i;
+          hoosonBagana = j;
+        }
+        if (current[i][j] == number) {
+          myMur = i;
+          myBagana = j;
+        }
+      }
+    }
+    if (Math.abs(myBagana + myMur - hoosonMur - hoosonBagana) == 1) {
+      current[hoosonMur][hoosonBagana] = number;
+      current[myMur][myBagana] = "";
+
+      setData(current);
+      setMoves((n) => n + 1);
+    }
+  };
+
   return (
     <div className="flex flex-col mx-auto p-14 bg-[#030512] justify-center items-center w-fit mt-[120px]">
       <p className="text-[#00B4BE] font-semibold text-lg mb-4">
@@ -34,7 +69,10 @@ const Puzzle = () => {
         {data.map((number) =>
           number.map((one) => {
             return (
-              <div className="flex p-7 bg-[#111527] text-white text-center justify-center">
+              <div
+                onClick={() => handleClick(one)}
+                className="flex p-7 bg-[#111527] text-white text-center justify-center"
+              >
                 {one}
               </div>
             );
