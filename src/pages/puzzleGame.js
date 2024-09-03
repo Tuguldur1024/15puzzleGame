@@ -1,11 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
 import Cube from "../components/Cube";
 
+import ChildrenClock from "../components/ChildrenClock";
+import GameClock from "../components/GameClock";
+
 let first = [
-  [1, 2, 3, 4],
-  [5, 6, 7, 8],
-  [9, 10, 11, 12],
-  [13, 14, "", 15],
+  [6, 5, 1, 15],
+  [7, 8, 12, 14],
+  [11, 4, "", 9],
+  [13, 2, 3, 10],
 ];
 let correct = [
   [1, 2, 3, 4],
@@ -16,22 +19,18 @@ let correct = [
 
 const Puzzle = () => {
   const [moves, setMoves] = useState(0);
-  const [timer, setTimer] = useState(0);
+  // const [timer, setTimer] = useState(0);
   const [data, setData] = useState(first);
 
   const [haveWon, sethaveWon] = useState(false);
 
-  useEffect(() => {
-    let interval = setInterval(() => {
-      setTimer((n) => n + 1);
-    }, 1000);
+  // useEffect(() => {
+  //   let interval = setInterval(() => {
+  //     setTimer((n) => n + 1);
+  //   }, 1000);
 
-    return () => clearInterval(interval);
-  }, data);
-
-  const checkWinning = () => {
-    return correct === data;
-  };
+  //   return () => clearInterval(interval);
+  // }, data);
 
   const handleClick = (number) => {
     let current = [...first];
@@ -51,7 +50,10 @@ const Puzzle = () => {
         }
       }
     }
-    if (Math.abs(myBagana + myMur - hoosonMur - hoosonBagana) == 1) {
+    if (
+      (Math.abs(myMur - hoosonMur) == 1 && myBagana == hoosonBagana) ||
+      (myMur == hoosonMur && Math.abs(myBagana - hoosonBagana) == 1)
+    ) {
       current[hoosonMur][hoosonBagana] = number;
       current[myMur][myBagana] = "";
 
@@ -67,7 +69,6 @@ const Puzzle = () => {
     sethaveWon(!haveWon);
     setData(first);
   };
-  console.log(haveWon);
   return (
     <>
       {haveWon && (
@@ -88,7 +89,10 @@ const Puzzle = () => {
           </p>
           <div className="flex justify-between text-white mb-6 w-full">
             <p> Moves: {moves}</p>
-            <p> Time: {timer}s</p>
+            <GameClock>
+              <ChildrenClock />
+              {console.log("hello")}
+            </GameClock>
           </div>
           <div className="grid grid-cols-4 grid-rows-4 gap-8 mb-5">
             {data.map((number, indexRow) =>
@@ -111,6 +115,7 @@ const Puzzle = () => {
           <div className="bg-gradient-to-r from-[#7519F0] via-[#00AECE]  to-[#00CA84] w-full text-center py-3 font-semibold">
             New Game
           </div>
+          <button class="btn btn-primary">One</button>
         </div>
       )}
     </>
