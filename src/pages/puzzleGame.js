@@ -2,10 +2,10 @@ import React, { useState, useContext, useEffect } from "react";
 import Cube from "../components/Cube";
 
 let first = [
-  [6, 5, 1, 14],
-  [7, 8, 12, 15],
-  [11, 4, "", 9],
-  [13, 2, 3, 10],
+  [1, 2, 3, 4],
+  [5, 6, 7, 8],
+  [9, 10, 11, 12],
+  [13, 14, "", 15],
 ];
 let correct = [
   [1, 2, 3, 4],
@@ -16,10 +16,10 @@ let correct = [
 
 const Puzzle = () => {
   const [moves, setMoves] = useState(0);
-
   const [timer, setTimer] = useState(0);
-
   const [data, setData] = useState(first);
+
+  const [haveWon, sethaveWon] = useState(false);
 
   useEffect(() => {
     let interval = setInterval(() => {
@@ -27,7 +27,11 @@ const Puzzle = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  });
+  }, data);
+
+  const checkWinning = () => {
+    return correct === data;
+  };
 
   const handleClick = (number) => {
     let current = [...first];
@@ -54,35 +58,62 @@ const Puzzle = () => {
       setData(current);
       setMoves((n) => n + 1);
     }
+    if (correct == data) {
+      sethaveWon(true);
+    }
   };
 
+  const playAgain = () => {
+    sethaveWon(!haveWon);
+    setData(first);
+  };
+  console.log(haveWon);
   return (
-    <div className="flex flex-col mx-auto p-14 bg-[#030512] justify-center items-center w-fit mt-[120px]">
-      <p className="text-[#00B4BE] font-semibold text-lg mb-4">
-        15 Puzzle Game
-      </p>
-      <div className="flex justify-between text-white mb-6 w-full">
-        <p> Moves: {moves}</p>
-        <p> Time: {timer}s</p>
-      </div>
-      <div className="grid grid-cols-4 grid-rows-4 gap-8 mb-5">
-        {data.map((number) =>
-          number.map((one) => {
-            return (
-              <div
-                onClick={() => handleClick(one)}
-                className="flex p-7 bg-[#111527] text-white text-center justify-center"
-              >
-                {one}
-              </div>
-            );
-          })
-        )}
-      </div>
-      <div className="bg-gradient-to-r from-[#7519F0] via-[#00AECE]  to-[#00CA84] w-full text-center py-3 font-semibold">
-        New Game
-      </div>
-    </div>
+    <>
+      {haveWon && (
+        <div className="flex flex-col mx-auto mt-[60px] p-14 justify-between bg-[#030512] text-center items-center w-[600px]">
+          <p className="text-white mb-[494px]"> You have Won </p>
+          <button
+            className="text-white w-fit bg-[#00B4BE] p-4"
+            onClick={playAgain}
+          >
+            Play Again?
+          </button>
+        </div>
+      )}
+      {!haveWon && (
+        <div className="flex flex-col mx-auto p-14 bg-[#030512] justify-center items-center w-fit mt-[60px]">
+          <p className="text-[#00B4BE] font-semibold text-lg mb-4">
+            15 Puzzle Game
+          </p>
+          <div className="flex justify-between text-white mb-6 w-full">
+            <p> Moves: {moves}</p>
+            <p> Time: {timer}s</p>
+          </div>
+          <div className="grid grid-cols-4 grid-rows-4 gap-8 mb-5">
+            {data.map((number, indexRow) =>
+              number.map((one, indexColumn) => {
+                let isRight = one == 4 * indexRow + indexColumn + 1;
+                let background = isRight
+                  ? "bg-gradient-to-r from-[#F5AE0E] to-[#FF0094]"
+                  : "bg-[#111527]";
+                return (
+                  <div
+                    onClick={() => handleClick(one)}
+                    className={`flex p-7 text-white text-center justify-center ${background}`}
+                  >
+                    {one}
+                  </div>
+                );
+              })
+            )}
+          </div>
+          <div className="bg-gradient-to-r from-[#7519F0] via-[#00AECE]  to-[#00CA84] w-full text-center py-3 font-semibold">
+            New Game
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
